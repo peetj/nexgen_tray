@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Safe-ish updater: only pulls when working tree is clean.
+# Update the repo + sync submodules to the commit pinned by this repo.
+# (We intentionally do NOT `git pull` inside submodules, because that leaves the superproject dirty.)
 
 is_clean() {
   git diff --quiet && git diff --cached --quiet
@@ -17,13 +18,3 @@ git pull --rebase --autostash
 
 echo "[update] submodule update --init --recursive"
 git submodule update --init --recursive
-
-# Pull submodule remotes too (only if clean)
-echo "[update] submodule foreach pull"
-git submodule foreach --recursive '
-  if git diff --quiet && git diff --cached --quiet; then
-    git pull --rebase --autostash || true
-  else
-    echo "[update] submodule $name dirty; skipping pull" >&2
-  fi
-'
