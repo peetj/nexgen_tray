@@ -1,0 +1,25 @@
+# ninja log v6
+25	776	7982787410052866	external/nexgen_qt_sys/nexgen_qt_sys_autogen/timestamp	907dedd84763cd65
+25	776	7982787410052866	external/nexgen_qt_sys/nexgen_qt_sys_autogen/mocs_compilation.cpp	907dedd84763cd65
+25	776	7982787410052866	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_sys/nexgen_qt_sys_autogen/timestamp	907dedd84763cd65
+25	776	7982787410052866	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_sys/nexgen_qt_sys_autogen/mocs_compilation.cpp	907dedd84763cd65
+42	818	7982787409925483	external/nexgen_qt_themeset/nexgen_qt_themeset_autogen/timestamp	6ff07bdcc2ae9fa2
+42	818	7982787409925483	external/nexgen_qt_themeset/nexgen_qt_themeset_autogen/mocs_compilation.cpp	6ff07bdcc2ae9fa2
+42	818	7982787409925483	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_themeset/nexgen_qt_themeset_autogen/timestamp	6ff07bdcc2ae9fa2
+42	818	7982787409925483	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_themeset/nexgen_qt_themeset_autogen/mocs_compilation.cpp	6ff07bdcc2ae9fa2
+791	2445	7982787410719137	external/nexgen_qt_sys/CMakeFiles/nexgen_qt_sys.dir/src/Settings.cpp.obj	6467b10e20f6456d
+819	2483	7982787411124614	external/nexgen_qt_themeset/CMakeFiles/nexgen_qt_themeset.dir/nexgen_qt_themeset_autogen/mocs_compilation.cpp.obj	83f41308b30098a3
+788	2613	7982787410719137	external/nexgen_qt_sys/CMakeFiles/nexgen_qt_sys.dir/nexgen_qt_sys_autogen/mocs_compilation.cpp.obj	9a58b3e8226166e8
+799	2643	7982787410894571	external/nexgen_qt_sys/CMakeFiles/nexgen_qt_sys.dir/src/IpcClient.cpp.obj	2604e3170eae9e6d
+823	2678	7982787411124614	external/nexgen_qt_themeset/CMakeFiles/nexgen_qt_themeset.dir/src/ThemeManager.cpp.obj	3fcb90c0388fc94d
+802	2755	7982787410894571	external/nexgen_qt_sys/CMakeFiles/nexgen_qt_sys.dir/src/IpcServer.cpp.obj	326fa329e33c8863
+2678	2771	7982787429729805	external/nexgen_qt_themeset/libnexgen_qt_themeset.a	3b1fd40a81bd45cd
+806	3254	7982787410894571	external/nexgen_qt_sys/CMakeFiles/nexgen_qt_sys.dir/src/HotkeyManager_win.cpp.obj	f25ae828f6df14c
+3256	3339	7982787435390525	external/nexgen_qt_sys/libnexgen_qt_sys.a	285ae1e2e16193f7
+3339	3570	7982787437887123	nexgen_tray_autogen/timestamp	806fa99add653e02
+3339	3570	7982787437887123	nexgen_tray_autogen/mocs_compilation.cpp	806fa99add653e02
+3339	3570	7982787437887123	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/nexgen_tray_autogen/timestamp	806fa99add653e02
+3339	3570	7982787437887123	C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/nexgen_tray_autogen/mocs_compilation.cpp	806fa99add653e02
+3572	3641	7982787438557701	CMakeFiles/nexgen_tray.dir/nexgen_tray_autogen/mocs_compilation.cpp.obj	6b0b15f089cfeff4
+3576	5070	7982787438725095	CMakeFiles/nexgen_tray.dir/src/main.cpp.obj	c8a709c922b30000
+5071	5251	7982787453557078	nexgen_tray.exe	256b5d3070640191
