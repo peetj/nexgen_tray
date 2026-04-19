@@ -5,16 +5,29 @@
 #include <QSettings>
 #include <QJsonObject>
 
-#include "nexgen/sys/Settings.h"
 #include "nexgen/sys/hotkeys/HotkeyManager.h"
 #include "nexgen/sys/ipc/IpcClient.h"
 
 #include "nexgen/themes/ThemeManager.h"
+#include "nexgen/themes/ThemeTypes.h"
 
 static constexpr int kHotkeyClockToggle = 1001;
 
 static QJsonObject cmd(const char* c) {
   return QJsonObject{{"cmd", QString::fromUtf8(c)}};
+}
+
+static void sendReloadTheme(nexgen::sys::ipc::IpcClient& ipc, QSystemTrayIcon& tray) {
+  const auto resp = ipc.request(QStringLiteral("nexgen.clock"), cmd("reloadTheme"), 150);
+  if (!resp.value("ok").toBool()) {
+    // Silent-ish; clock may not be running.
+    tray.showMessage(
+      QStringLiteral("Theme updated"),
+      QStringLiteral("Clock theme will apply next time it starts."),
+      QSystemTrayIcon::Information,
+      2000
+    );
+  }
 }
 
 int main(int argc, char** argv) {
@@ -24,24 +37,18 @@ int main(int argc, char** argv) {
   // Unified settings namespace
   QSettings settings("Nexgen", "Utilities");
 
-  // Theme (placeholder palette for now; will be replaced when we extract real themes)
   nexgen::themes::ThemeManager themes;
   themes.load(settings);
   themes.applyTo(app);
+
   QObject::connect(&themes, &nexgen::themes::ThemeManager::themeChanged, [&] {
     themes.applyTo(app);
     themes.save(settings);
   });
 
-  // Tray
   QSystemTrayIcon tray;
   tray.setToolTip(QStringLiteral("Nexgen Utilities"));
   tray.setIcon(QIcon::fromTheme(QStringLiteral("applications-system")));
-
-  QMenu menu;
-
-  auto* toggleClock = menu.addAction(QStringLiteral("Clock (Ctrl+Alt+T)"));
-  auto* quit = menu.addAction(QStringLiteral("Quit"));
 
   nexgen::sys::ipc::IpcClient ipc;
 
@@ -57,8 +64,37 @@ int main(int argc, char** argv) {
     }
   };
 
-  QObject::connect(toggleClock, &QAction::triggered, toggleClockFn);
-  QObject::connect(quit, &QAction::triggered, &app, &QCoreApplication::quit);
+  QMenu menu;
+
+  // Clock
+  menu.addAction(QStringLiteral("Clock (Ctrl+Alt+T)"), toggleClockFn);
+
+  // Theme
+  auto* themeMenu = menu.addMenu(QStringLiteral("Theme"));
+  auto* modeMenu = themeMenu->addMenu(QStringLiteral("Mode"));
+
+  QActionGroup* modeGroup = new QActionGroup(&menu);
+  modeGroup->setExclusive(true);
+
+  auto addMode = [&](const QString& name, nexgen::themes::ThemeMode mode) {
+    QAction* a = modeMenu->addAction(name);
+    a->setCheckable(true);
+    a->setActionGroup(modeGroup);
+    a->setChecked(themes.mode() == mode);
+    QObject::connect(a, &QAction::triggered, [&] {
+      themes.setMode(mode);
+      themes.applyTo(app);
+      themes.save(settings);
+      sendReloadTheme(ipc, tray);
+    });
+  };
+
+  addMode(QStringLiteral("System"), nexgen::themes::ThemeMode::System);
+  addMode(QStringLiteral("Light"),  nexgen::themes::ThemeMode::Light);
+  addMode(QStringLiteral("Dark"),   nexgen::themes::ThemeMode::Dark);
+
+  menu.addSeparator();
+  menu.addAction(QStringLiteral("Quit"), &app, &QCoreApplication::quit);
 
   tray.setContextMenu(&menu);
   tray.show();
@@ -69,7 +105,6 @@ int main(int argc, char** argv) {
     if (id == kHotkeyClockToggle) toggleClockFn();
   });
 
-  // Ctrl+Alt+T
   const bool ok = hotkeys.registerHotkey(kHotkeyClockToggle, true, true, false, 'T');
   if (!ok) {
     tray.showMessage(
