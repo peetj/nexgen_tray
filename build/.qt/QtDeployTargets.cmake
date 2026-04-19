@@ -1,7 +1,0 @@
-set(__QT_DEPLOY_TARGET_nexgen_qt_sys_FILE C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_sys/libnexgen_qt_sys.a)
-set(__QT_DEPLOY_TARGET_nexgen_qt_sys_TYPE STATIC_LIBRARY)
-set(__QT_DEPLOY_TARGET_nexgen_qt_themeset_FILE C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/external/nexgen_qt_themeset/libnexgen_qt_themeset.a)
-set(__QT_DEPLOY_TARGET_nexgen_qt_themeset_TYPE STATIC_LIBRARY)
-set(__QT_DEPLOY_TARGET_nexgen_tray_FILE C:/Users/Peter Januarius/Documents/_DATA/_PROJECTS/working_projects/nexgen_tray/build/nexgen_tray.exe)
-set(__QT_DEPLOY_TARGET_nexgen_tray_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_nexgen_tray_RUNTIME_DLLS C:/Qt/6.11.0/mingw_64/bin/Qt6Network.dll;C:/Qt/6.11.0/mingw_64/bin/Qt6Widgets.dll;C:/Qt/6.11.0/mingw_64/bin/Qt6Gui.dll;C:/Qt/6.11.0/mingw_64/bin/Qt6Core.dll)
