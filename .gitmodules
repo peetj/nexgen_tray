@@ -1,0 +1,6 @@
+[submodule "external/nexgen_qt_sys"]
+	path = external/nexgen_qt_sys
+	url = https://github.com/peetj/nexgen_qt_sys.git
+[submodule "external/nexgen_qt_themeset"]
+	path = external/nexgen_qt_themeset
+	url = https://github.com/peetj/nexgen_qt_themeset.git
