@@ -8,3 +8,4 @@ Format:
 
 ## 2026-04-20
 - f008678 Tray: Clock menu for Move-to-cursor, Size presets, Opacity presets, Translucent background toggle
+- 1b9b925 Tray: add 25% clock opacity preset
