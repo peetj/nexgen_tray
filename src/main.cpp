@@ -114,6 +114,7 @@ int main(int argc, char** argv) {
   addOpacity(QStringLiteral("85%"), 0.85);
   addOpacity(QStringLiteral("70%"), 0.70);
   addOpacity(QStringLiteral("55%"), 0.55);
+  addOpacity(QStringLiteral("25%"), 0.25);
 
   // Translucent background toggle
   QAction* translucentA = clockMenu->addAction(QStringLiteral("Translucent background"));
