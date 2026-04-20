@@ -1,6 +1,7 @@
 # PROJECT_MEMORY
 
 ## Purpose
+- System tray hub. Owns hotkeys and controls utilities via IPC (`QLocalSocket`).
 
 ## Build & run
 
