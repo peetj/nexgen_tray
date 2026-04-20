@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Repo-local post-commit hook for maintaining docs/DEVLOG.md.
+# NOTE: It is impossible to include the *same commit's* final hash inside a file
+# that is committed as part of that same commit without creating a circular dependency.
+# This hook therefore creates a *follow-up commit* that records the previous commit.
+
+if [[ "${NEXGEN_DEVLOG_HOOK_DISABLED:-}" == "1" ]]; then
+  exit 0
+fi
+
+# Avoid infinite recursion / noise.
+msg=$(git log -1 --pretty=%s)
+if [[ "$msg" == DEVLOG:* ]]; then
+  exit 0
+fi
+
+prev_hash=$(git rev-parse --short HEAD)
+prev_subject="$msg"
+prev_tag=$(git describe --tags --exact-match HEAD 2>/dev/null || true)
+
+repo_root=$(git rev-parse --show-toplevel)
+devlog="$repo_root/docs/DEVLOG.md"
+
+mkdir -p "$repo_root/docs"
+if [[ ! -f "$devlog" ]]; then
+  cat >"$devlog" <<'EOF'
+# DEVLOG
+
+Chronological log (keyed by date).
+
+Format:
+- One section per date (`## YYYY-MM-DD`).
+- Entries include the commit hash and subject; include tag/version when present.
+EOF
+fi
+
+# Date in local timezone.
+date_str=$(date +%Y-%m-%d)
+entry="- ${prev_hash} ${prev_subject}"
+if [[ -n "$prev_tag" ]]; then
+  entry+=" (tag: ${prev_tag})"
+fi
+
+# Append under today's heading; create heading if missing.
+if ! grep -q "^## ${date_str}$" "$devlog"; then
+  printf "\n## %s\n" "$date_str" >>"$devlog"
+fi
+printf "%s\n" "$entry" >>"$devlog"
+
+# Commit the devlog update as a follow-up commit.
+# Use an env var to prevent recursion.
+export NEXGEN_DEVLOG_HOOK_DISABLED=1
+
+git add "$devlog"
+# If nothing changed, bail.
+if git diff --cached --quiet; then
+  exit 0
+fi
+
+git commit -m "DEVLOG: record ${prev_hash}" --no-verify >/dev/null
