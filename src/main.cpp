@@ -2,6 +2,7 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QAction>
+#include <QActionGroup>
 #include <QSettings>
 #include <QJsonObject>
 
@@ -18,15 +19,11 @@ static QJsonObject cmd(const char* c) {
 }
 
 static void sendReloadTheme(nexgen::sys::ipc::IpcClient& ipc, QSystemTrayIcon& tray) {
-  const auto resp = ipc.request(QStringLiteral("nexgen.clock"), cmd("reloadTheme"), 150);
-  if (!resp.value("ok").toBool()) {
-    // Silent-ish; clock may not be running.
-    tray.showMessage(
-      QStringLiteral("Theme updated"),
-      QStringLiteral("Clock theme will apply next time it starts."),
-      QSystemTrayIcon::Information,
-      2000
-    );
+  const auto resp = ipc.request(QStringLiteral("nexgen.clock"), cmd("reloadTheme"), 300);
+  if (resp.value("ok").toBool()) {
+    tray.showMessage(QStringLiteral("Theme"), QStringLiteral("Clock theme reloaded."), QSystemTrayIcon::Information, 1200);
+  } else {
+    tray.showMessage(QStringLiteral("Theme"), QStringLiteral("Clock not running (will apply next time)."), QSystemTrayIcon::Information, 2000);
   }
 }
 
@@ -81,17 +78,43 @@ int main(int argc, char** argv) {
     a->setCheckable(true);
     a->setActionGroup(modeGroup);
     a->setChecked(themes.mode() == mode);
-    QObject::connect(a, &QAction::triggered, [&] {
+    // IMPORTANT: capture `mode` by value.
+    // Using `[&]` here would capture the local parameter by reference, leaving a dangling
+    // reference after addMode() returns (symptom: mode appears stuck at 0).
+    QObject::connect(a, &QAction::triggered, [&, mode] {
       themes.setMode(mode);
       themes.applyTo(app);
       themes.save(settings);
+      settings.sync();
       sendReloadTheme(ipc, tray);
+      const auto dbg = ipc.request(QStringLiteral("nexgen.clock"), cmd("getThemeDebug"), 300);
+      if (dbg.value("ok").toBool()) {
+        const auto w = dbg.value("window").toObject();
+        tray.showMessage(QStringLiteral("Clock palette"),
+          QStringLiteral("mode=%1 bg rgba(%2,%3,%4,%5)")
+            .arg(dbg.value("rawMode").toInt())
+            .arg(w.value("r").toInt())
+            .arg(w.value("g").toInt())
+            .arg(w.value("b").toInt())
+            .arg(w.value("a").toInt()),
+          QSystemTrayIcon::Information, 2000);
+      }
     });
   };
 
   addMode(QStringLiteral("System"), nexgen::themes::ThemeMode::System);
   addMode(QStringLiteral("Light"),  nexgen::themes::ThemeMode::Light);
   addMode(QStringLiteral("Dark"),   nexgen::themes::ThemeMode::Dark);
+
+  themeMenu->addSeparator();
+  themeMenu->addAction(QStringLiteral("Reset theme settings"), [&] {
+    settings.remove(QStringLiteral("Theme"));
+    settings.sync();
+    themes.load(settings);
+    themes.applyTo(app);
+    sendReloadTheme(ipc, tray);
+    tray.showMessage(QStringLiteral("Theme"), QStringLiteral("Theme settings reset."), QSystemTrayIcon::Information, 1500);
+  });
 
   menu.addSeparator();
   menu.addAction(QStringLiteral("Quit"), &app, &QCoreApplication::quit);
