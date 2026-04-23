@@ -14,6 +14,7 @@
 #include "nexgen/themes/ThemeTypes.h"
 
 static constexpr int kHotkeyClockToggle = 1001;
+static constexpr int kHotkeyClippyToggle = 1002;
 
 static QJsonObject cmd(const char* c) {
   return QJsonObject{{"cmd", QString::fromUtf8(c)}};
@@ -62,10 +63,25 @@ int main(int argc, char** argv) {
     }
   };
 
+  auto toggleClippyFn = [&] {
+    const auto resp = ipc.request(QStringLiteral("nexgen.clippy"), cmd("toggle"), 200);
+    if (!resp.value("ok").toBool()) {
+      tray.showMessage(
+        QStringLiteral("Clippy not running"),
+        QStringLiteral("Could not reach nexgen.clippy yet (clippy utility not started)."),
+        QSystemTrayIcon::Information,
+        3000
+      );
+    }
+  };
+
   QMenu menu;
 
   // Clock
   menu.addAction(QStringLiteral("Clock (Ctrl+Alt+T)"), toggleClockFn);
+
+  // Clippy
+  menu.addAction(QStringLiteral("Clippy (Ctrl+Alt+C)"), toggleClippyFn);
 
   // Clock settings
   auto* clockMenu = menu.addMenu(QStringLiteral("Clock"));
@@ -185,10 +201,11 @@ int main(int argc, char** argv) {
   nexgen::sys::hotkeys::HotkeyManager hotkeys;
   hotkeys.setCallback([&](int id) {
     if (id == kHotkeyClockToggle) toggleClockFn();
+    if (id == kHotkeyClippyToggle) toggleClippyFn();
   });
 
-  const bool ok = hotkeys.registerHotkey(kHotkeyClockToggle, true, true, false, 'T');
-  if (!ok) {
+  const bool okClock = hotkeys.registerHotkey(kHotkeyClockToggle, true, true, false, 'T');
+  if (!okClock) {
     tray.showMessage(
       QStringLiteral("Hotkey registration failed"),
       QStringLiteral("Ctrl+Alt+T could not be registered (already in use?)."),
@@ -197,7 +214,18 @@ int main(int argc, char** argv) {
     );
   }
 
+  const bool okClippy = hotkeys.registerHotkey(kHotkeyClippyToggle, true, true, false, 'C');
+  if (!okClippy) {
+    tray.showMessage(
+      QStringLiteral("Hotkey registration failed"),
+      QStringLiteral("Ctrl+Alt+C could not be registered (already in use?)."),
+      QSystemTrayIcon::Warning,
+      5000
+    );
+  }
+
   const int rc = app.exec();
   hotkeys.unregisterHotkey(kHotkeyClockToggle);
+  hotkeys.unregisterHotkey(kHotkeyClippyToggle);
   return rc;
 }
