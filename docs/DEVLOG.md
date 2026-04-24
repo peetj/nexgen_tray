@@ -6,6 +6,10 @@ Format:
 - One section per date (`## YYYY-MM-DD`).
 - Entries include the commit hash and subject; include tag/version when present.
 
+## 2026-04-24
+- TBD Add `docs/UTILITIES_IDEAS.md` as the canonical shared space for cross-utility discussion (ideas, platform principles, patterns).
+- TBD Captured utility idea: folder colouring in Explorer via a curated icon library + per-folder custom icons.
+
 ## 2026-04-20
 - f008678 Tray: Clock menu for Move-to-cursor, Size presets, Opacity presets, Translucent background toggle
 - 1b9b925 Tray: add 25% clock opacity preset
