@@ -17,6 +17,8 @@ add_subdirectory(external/nexgen_qt_themeset)
 
 add_executable(nexgen_tray
   src/main.cpp
+  src/NotifyListener.h
+  src/NotifyListener.cpp
 )
 
 target_link_libraries(nexgen_tray PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network

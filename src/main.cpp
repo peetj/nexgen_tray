@@ -7,6 +7,8 @@
 #include <QJsonObject>
 #include <QCursor>
 
+#include "NotifyListener.h"
+
 #include "nexgen/sys/hotkeys/HotkeyManager.h"
 #include "nexgen/sys/ipc/IpcClient.h"
 
@@ -196,6 +198,33 @@ int main(int argc, char** argv) {
 
   tray.setContextMenu(&menu);
   tray.show();
+
+  // HTTP notify listener (Alfred -> Hermes PC)
+  // Settings keys:
+  // - NotifyListener/Port (int)
+  // - NotifyListener/ApiKey (string)
+  NotifyListener::Config notifyCfg;
+  notifyCfg.port = static_cast<quint16>(settings.value(QStringLiteral("NotifyListener/Port"), 17321).toInt());
+  notifyCfg.apiKey = settings.value(QStringLiteral("NotifyListener/ApiKey"), QStringLiteral("CHANGE_ME"))
+                       .toString();
+
+  NotifyListener notify(&tray, notifyCfg, &app);
+  QString notifyErr;
+  if (!notify.start(&notifyErr)) {
+    tray.showMessage(
+      QStringLiteral("Notify listener"),
+      QStringLiteral("Failed to start: %1").arg(notifyErr),
+      QSystemTrayIcon::Warning,
+      8000
+    );
+  } else {
+    tray.showMessage(
+      QStringLiteral("Notify listener"),
+      QStringLiteral("Listening on port %1").arg(notifyCfg.port),
+      QSystemTrayIcon::Information,
+      2000
+    );
+  }
 
   // Hotkeys (hub owns hotkeys)
   nexgen::sys::hotkeys::HotkeyManager hotkeys;
